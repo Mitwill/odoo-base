@@ -49,8 +49,20 @@ __version__ = openerp.release.version
 # Also use the `openerp` logger for the main script.
 _logger = logging.getLogger('openerp')
 
+def is_docker():
+    def text_in_file(text, filename):
+        try:
+            with open(filename, encoding='utf-8') as lines:
+                return any(text in line for line in lines)
+        except OSError:
+            return False
+    cgroup = '/proc/self/cgroup'
+    return os.path.exists('/.dockerenv') or text_in_file('docker', cgroup)
+
 def check_root_user():
     """ Exit if the process's user is 'root' (on POSIX system)."""
+    if is_docker():
+        return
     if os.name == 'posix':
         import pwd
         if pwd.getpwuid(os.getuid())[0] == 'root' :
@@ -136,9 +148,7 @@ def import_translation():
             )
 
 def main(args):
-    # commented below function call because we are running odoo on docker container which is not a security risk
-    # if you are using odoo setup on host machine then uncomment below line to check root user.
-    # check_root_user()
+    check_root_user()
     openerp.tools.config.parse_config(args)
     check_postgres_user()
     report_configuration()
