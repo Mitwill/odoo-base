@@ -42,8 +42,6 @@ RUN mkdir /opt/odoo
 # https://stackoverflow.com/questions/34398632/docker-how-to-run-pip-requirements-txt-only-if-there-was-a-change
 COPY odoo8/requirements.txt /opt/odoo/requirements.txt
 
-# Create a new user
-RUN useradd -ms /bin/bash odoo
 # Set the working directory
 WORKDIR /opt/odoo/
 
@@ -53,6 +51,3 @@ RUN pip install --upgrade pip \
 
 # Copy the odoo source code
 COPY odoo8/ ./
-
-RUN chown -R odoo:odoo /opt/odoo/
-
