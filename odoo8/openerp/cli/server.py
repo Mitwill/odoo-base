@@ -136,7 +136,9 @@ def import_translation():
             )
 
 def main(args):
-    check_root_user()
+    # commented below function call because we are running odoo on docker container which is not a security risk
+    # if you are using odoo setup on host machine then uncomment below line to check root user.
+    # check_root_user()
     openerp.tools.config.parse_config(args)
     check_postgres_user()
     report_configuration()
