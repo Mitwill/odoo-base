@@ -51,3 +51,5 @@ RUN pip install --upgrade pip \
 
 # Copy the odoo source code
 COPY odoo8/ ./
+
+ENTRYPOINT ["python", "openerp-server"]
