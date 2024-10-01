@@ -1,4 +1,3 @@
-# Use an official Python runtime as a parent image
 FROM python:2.7
 
 LABEL maintainer="poojan@kpinfo.tech"
@@ -22,17 +21,33 @@ RUN set -x; \
             python-renderpm \
             python-watchdog \
             gnupg2 \
-            lsb-release \
-        && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb \
-        && echo 'ea8277df4297afc507c61122f3c349af142f31e5 wkhtmltox.deb' | sha1sum -c - \
-        && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
-        && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
+            xfonts-75dpi \
+            xfonts-base \
+            lsb-release
+
+
+RUN wget https://snapshot.debian.org/archive/debian/20160413T160058Z/pool/main/libp/libpng/libpng12-0_1.2.54-6_amd64.deb \
+    && dpkg -i libpng12-0_1.2.54-6_amd64.deb
+
+RUN wget https://snapshot.debian.org/archive/debian/20100115T221920Z/pool/main/libj/libjpeg8/libjpeg8_8-1_amd64.deb \
+    && dpkg -i libjpeg8_8-1_amd64.deb
+
+RUN wget http://snapshot.debian.org/archive/debian/20190501T215844Z/pool/main/g/glibc/multiarch-support_2.28-10_amd64.deb \
+    && dpkg -i multiarch-support*.deb
+
+RUN wget http://snapshot.debian.org/archive/debian/20170705T160707Z/pool/main/o/openssl/libssl1.0.0_1.0.2l-1%7Ebpo8%2B1_amd64.deb \
+    && dpkg -i libssl1.0.0*.deb
+
+# Copy Wkhtmltopdf
+COPY wkhtmltox-0.12.2.1_linux-trusty-amd64.deb/ ./
+RUN dpkg -i --force-depends  wkhtmltox-0.12.2.1_linux-trusty-amd64.deb
+
 
 # Install PostgreSQL client-9.6
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-    curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-    && apt-get update \
-    && apt-get install -y postgresql-client-9.6
+#RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+#    curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+#    && apt-get update \
+#    && apt-get install -y postgresql-client-9.6
 
 
 # create odoo directory
